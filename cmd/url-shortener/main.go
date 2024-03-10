@@ -3,6 +3,8 @@ package main
 import (
 	//"fmt"
 	"github.com/RomanLevBy/UrlShortener/internal/config"
+	"github.com/RomanLevBy/UrlShortener/internal/lib/logger/sl"
+	"github.com/RomanLevBy/UrlShortener/internal/storage/sqlite"
 	"log/slog"
 	"os"
 )
@@ -14,14 +16,19 @@ const (
 )
 
 func main() {
-	//export CONFIG_PATH=./config/local.yaml
 	conf := config.MustLoad()
 
 	log := setupLogger(conf.Env)
 	log.Info("Config init of", slog.String("env", conf.Env))
 	log.Debug("Debug messages are enable")
 
-	//todo init storage
+	storage, err := sqlite.New(conf.StoragePath)
+	if err != nil {
+		log.Error("Failed to init storage", sl.Err(err))
+		os.Exit(1)
+	}
+
+	_ = storage
 
 	//todo init router: chi, render
 
