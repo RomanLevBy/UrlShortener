@@ -9,6 +9,8 @@ func main() {
     //export CONFIG_PATH=./config/local.yaml
 	conf := config.MustLoad()
 
+	_ = conf
+
 	//todo init logger
 
 	//todo init storage
