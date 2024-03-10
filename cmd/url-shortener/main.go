@@ -1,7 +1,17 @@
 package main
 
+import (
+    "fmt"
+	"github.com/RomanLevBy/UrlShortener/internal/config"
+)
+
 func main() {
-	//todo init config
+    //export CONFIG_PATH=./config/local.yaml
+	conf := config.MustLoad()
+
+    fmt.Println(conf)
+
+	_ = conf
 
 	//todo init logger
 
