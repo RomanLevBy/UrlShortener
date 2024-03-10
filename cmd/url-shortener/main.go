@@ -9,8 +9,6 @@ func main() {
     //export CONFIG_PATH=./config/local.yaml
 	conf := config.MustLoad()
 
-    fmt.Println(conf)
-
 	_ = conf
 
 	//todo init logger
