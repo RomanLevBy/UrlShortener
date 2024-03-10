@@ -2,9 +2,14 @@ package main
 
 import (
 	//"fmt"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+
 	"github.com/RomanLevBy/UrlShortener/internal/config"
 	"github.com/RomanLevBy/UrlShortener/internal/lib/logger/sl"
 	"github.com/RomanLevBy/UrlShortener/internal/storage/sqlite"
+	mwLogger "github.com/RomanLevBy/UrlShortener/internal/http-server/middleware/logger"
 	"log/slog"
 	"os"
 )
@@ -30,7 +35,12 @@ func main() {
 
 	_ = storage
 
-	//todo init router: chi, render
+	router := chi.NewRouter()
+
+	router.Use(middleware.RequestID)
+	router.Use(middleware.RealIP)
+	router.Use(middleware.Logger)
+	router.Use(mwLogger.New(log))
 
 	//todo run server
 }
