@@ -2,10 +2,17 @@ package main
 
 import (
 	//"fmt"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+
 	"github.com/RomanLevBy/UrlShortener/internal/config"
+	"github.com/RomanLevBy/UrlShortener/internal/http-server/handlers/url/save"
+	mwLogger "github.com/RomanLevBy/UrlShortener/internal/http-server/middleware/logger"
 	"github.com/RomanLevBy/UrlShortener/internal/lib/logger/sl"
 	"github.com/RomanLevBy/UrlShortener/internal/storage/sqlite"
 	"log/slog"
+	"net/http"
 	"os"
 )
 
@@ -30,9 +37,32 @@ func main() {
 
 	_ = storage
 
-	//todo init router: chi, render
+	router := chi.NewRouter()
 
-	//todo run server
+	router.Use(middleware.RequestID)
+	router.Use(middleware.RealIP)
+	//router.Use(middleware.Logger)
+	router.Use(mwLogger.New(log))
+	router.Use(middleware.Recoverer)
+	router.Use(middleware.URLFormat)
+
+	router.Post("/url", save.New(log, storage))
+
+	log.Info("starting server", slog.String("address", conf.Address))
+
+	srv := &http.Server{
+		Addr:         conf.Address,
+		Handler:      router,
+		ReadTimeout:  conf.HTTPServer.Timeout,
+		WriteTimeout: conf.HTTPServer.Timeout,
+		IdleTimeout:  conf.HTTPServer.IdleTimeout,
+	}
+
+	if err := srv.ListenAndServe(); err != nil {
+		log.Error("failed to start server")
+	}
+
+	log.Info("server stopped")
 }
 
 func setupLogger(env string) *slog.Logger {
