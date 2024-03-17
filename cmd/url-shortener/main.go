@@ -26,7 +26,7 @@ func main() {
 	conf := config.MustLoad()
 
 	log := setupLogger(conf.Env)
-	log.Info("Config init of", slog.String("env", conf.Env))
+	log.Info("Config init.", slog.String("env", conf.Env))
 	log.Debug("Debug messages are enable")
 
 	storage, err := sqlite.New(conf.StoragePath)
@@ -34,8 +34,6 @@ func main() {
 		log.Error("Failed to init storage", sl.Err(err))
 		os.Exit(1)
 	}
-
-	_ = storage
 
 	router := chi.NewRouter()
 
@@ -59,7 +57,7 @@ func main() {
 	}
 
 	if err := srv.ListenAndServe(); err != nil {
-		log.Error("failed to start server")
+		log.Error("failed to start server", err)
 	}
 
 	log.Info("server stopped")
