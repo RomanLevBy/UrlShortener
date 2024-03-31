@@ -11,6 +11,7 @@ import (
 	resp "github.com/RomanLevBy/UrlShortener/internal/lib/api/response"
 )
 
+//go:generate go run github.com/vektra/mockery/v2@v2.42.1 --name=URLRemover
 type URLRemover interface {
 	DeleteURL(alias string) error
 }
@@ -38,6 +39,8 @@ func New(log *slog.Logger, urlRemover URLRemover) http.HandlerFunc {
 			log.Info("fail to delete url", slog.String("alias", alias))
 
 			render.JSON(w, r, resp.Error("Fail to delete url"))
+
+			return
 		}
 
 		log.Info("url deleted", slog.String("alias", alias))
