@@ -55,6 +55,6 @@ func New(log *slog.Logger, urlProvider URLProvider) http.HandlerFunc {
 
 		log.Info("Redirect to url", slog.String("url", url))
 
-		http.Redirect(w, r, url, http.StatusSeeOther)
+		http.Redirect(w, r, url, http.StatusFound)
 	}
 }
