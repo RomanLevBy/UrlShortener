@@ -12,7 +12,7 @@ import (
 	"github.com/RomanLevBy/UrlShortener/internal/http-server/handlers/url/save"
 	mwLogger "github.com/RomanLevBy/UrlShortener/internal/http-server/middleware/logger"
 	"github.com/RomanLevBy/UrlShortener/internal/lib/logger/sl"
-	"github.com/RomanLevBy/UrlShortener/internal/storage/sqlite"
+	"github.com/RomanLevBy/UrlShortener/internal/storage/postgres"
 	"log/slog"
 	"net/http"
 	"os"
@@ -31,7 +31,7 @@ func main() {
 	log.Info("Config init.", slog.String("env", conf.Env))
 	log.Debug("Debug messages are enable")
 
-	storage, err := sqlite.New(conf.StoragePath)
+	storage, err := postgres.New(conf)
 	if err != nil {
 		log.Error("Failed to init storage", sl.Err(err))
 		os.Exit(1)

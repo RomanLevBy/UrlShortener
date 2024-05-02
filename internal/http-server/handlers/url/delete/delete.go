@@ -9,6 +9,7 @@ import (
 	"log/slog"
 
 	resp "github.com/RomanLevBy/UrlShortener/internal/lib/api/response"
+	"github.com/RomanLevBy/UrlShortener/internal/lib/logger/sl"
 )
 
 //go:generate go run github.com/vektra/mockery/v2@v2.42.1 --name=URLRemover
@@ -36,7 +37,7 @@ func New(log *slog.Logger, urlRemover URLRemover) http.HandlerFunc {
 
 		err := urlRemover.DeleteURL(alias)
 		if err != nil {
-			log.Info("fail to delete url", slog.String("alias", alias))
+			log.Info("fail to delete url", slog.String("alias", alias), sl.Err(err))
 
 			render.JSON(w, r, resp.Error("Fail to delete url"))
 
