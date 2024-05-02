@@ -18,7 +18,5 @@ FROM scratch
 COPY --from=builder /app /
 COPY --from=builder /url-shortener /url-shortener
 
-ENV CONFIG_PATH='./config/local.yaml'
-
 # Run
 CMD [ "/url-shortener" ]
