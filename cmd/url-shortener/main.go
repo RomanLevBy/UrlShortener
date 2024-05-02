@@ -7,10 +7,12 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 
 	"github.com/RomanLevBy/UrlShortener/internal/config"
+	"github.com/RomanLevBy/UrlShortener/internal/http-server/handlers/redirect"
+	"github.com/RomanLevBy/UrlShortener/internal/http-server/handlers/url/delete"
 	"github.com/RomanLevBy/UrlShortener/internal/http-server/handlers/url/save"
 	mwLogger "github.com/RomanLevBy/UrlShortener/internal/http-server/middleware/logger"
 	"github.com/RomanLevBy/UrlShortener/internal/lib/logger/sl"
-	"github.com/RomanLevBy/UrlShortener/internal/storage/sqlite"
+	"github.com/RomanLevBy/UrlShortener/internal/storage/postgres"
 	"log/slog"
 	"net/http"
 	"os"
@@ -29,7 +31,7 @@ func main() {
 	log.Info("Config init.", slog.String("env", conf.Env))
 	log.Debug("Debug messages are enable")
 
-	storage, err := sqlite.New(conf.StoragePath)
+	storage, err := postgres.New(conf)
 	if err != nil {
 		log.Error("Failed to init storage", sl.Err(err))
 		os.Exit(1)
@@ -44,7 +46,17 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 
-	router.Post("/url", save.New(log, storage))
+	router.Route("/url", func(r chi.Router) {
+		//todo create new auth approach
+		r.Use(middleware.BasicAuth("url-shortener", map[string]string{
+			conf.HTTPServer.User: conf.HTTPServer.Password,
+		}))
+
+		r.Post("/", save.New(log, storage))
+		r.Delete("/{alias}", delete.New(log, storage))
+	})
+
+	router.Get("/{alias}", redirect.New(log, storage))
 
 	log.Info("starting server", slog.String("address", conf.Address))
 
