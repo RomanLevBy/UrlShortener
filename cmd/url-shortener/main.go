@@ -46,7 +46,7 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 
-	router.Route("/url", func(r chi.Router) {
+	router.Route("/api/url", func(r chi.Router) {
 		//todo create new auth approach
 		r.Use(middleware.BasicAuth("url-shortener", map[string]string{
 			conf.HTTPServer.User: conf.HTTPServer.Password,
