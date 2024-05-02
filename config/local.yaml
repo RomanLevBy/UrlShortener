@@ -5,9 +5,8 @@ http_server:
   address: "0.0.0.0:8080"
   timeout: 4s
   idle_timeout: 60s
-  user: Roman
-  password: RomanPass
-
+  user: basic_user
+  password: basic_pass
 postgres:
   host: url-shortener-postgres-db
   user: root
